@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\BrandController;
+use App\Http\Controllers\API\EventPartnerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +28,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 });
+
+Route::get('/brands', [BrandController::class, 'index']);
+Route::get('/brands/{id}', [BrandController::class, 'show']);
+Route::post('/brands', [BrandController::class, 'store']);
+Route::put('/brands/{id}', [BrandController::class, 'update']);
+Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
+Route::get('/top-events', [EventPartnerController::class, 'getTopEventData']);
+Route::get('/top-events-same-city', [EventPartnerController::class, 'getTopEventsWithSameCity']);
+Route::post('/brands/filter', [BrandController::class, 'filter']);
