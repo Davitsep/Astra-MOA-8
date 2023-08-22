@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Brand;
 use App\Models\Event;
+use App\Models\EventPartner;
 use Illuminate\Support\Facades\DB;
 
 class EventPartnerController extends Controller
@@ -37,34 +38,54 @@ class EventPartnerController extends Controller
         ->take(3)
         ->get();
 
-    $eventsWithSameCity = [];
+    $topBrandData = [];
 
     foreach ($topBrands as $brand) {
         $events = $brand->event_partner;
-        
+
         // Mengelompokkan event berdasarkan kota
         $eventsByCity = $events->groupBy('city');
-
-        // Mengambil 4 event dengan kota yang sama paling banyak
-        $topEvents = $eventsByCity->map(function ($events) {
-            return $events->take(4)->all();
-        });
 
         // Menghitung jumlah event pada setiap kelompok kota
         $cityEventCounts = $eventsByCity->map(function ($events) {
             return count($events);
         });
 
-        $brandWithEvents = [
-            'brand' => $brand,
-            'topEventsWithSameCity' => $topEvents,
-            'cityEventCounts' => $cityEventCounts,
+        // Mengambil 4 cityEventCounts paling banyak
+        $topCityEventCounts = $cityEventCounts->sortByDesc('cityEventCounts')->take(4);
+
+        $brandData = [
+            'brand' => $brand->name, // Ubah ini sesuai dengan field yang sesuai
+            'topCityEventCounts' => $topCityEventCounts,
         ];
 
-        $eventsWithSameCity[] = $brandWithEvents;
+        $topBrandData[] = $brandData;
     }
 
-    return response()->json(['topEventsWithSameCity' => $eventsWithSameCity]);
+    return response()->json(['topBrandData' => $topBrandData]);
 }
+
+
+public function store(Request $request)
+    {
+        $data = $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'brand_id' => 'required|exists:brands,id',
+        ]);
+
+        // Cek apakah event_id dan brand_id sudah ada dalam tabel event_partner
+        $existingEventPartner = EventPartner::where('event_id', $data['event_id'])
+            ->where('brand_id', $data['brand_id'])
+            ->first();
+
+        if ($existingEventPartner) {
+            return response()->json(['message' => 'Event Partner already exists'], 400);
+        }
+
+        // Jika belum ada, tambahkan Event Partner baru
+        $eventPartner = EventPartner::create($data);
+
+        return response()->json(['message' => 'Event partner created successfully'], 201);
+    }
 
 }

@@ -3,6 +3,9 @@
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\EventPartnerController;
+use App\Http\Controllers\API\DigitalController;
+use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\API\EventParticipantController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,3 +40,17 @@ Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
 Route::get('/top-events', [EventPartnerController::class, 'getTopEventData']);
 Route::get('/top-events-same-city', [EventPartnerController::class, 'getTopEventsWithSameCity']);
 Route::post('/brands/filter', [BrandController::class, 'filter']);
+Route::get('/event-details', [DigitalController::class, 'getEventDetails']);
+Route::get('/digital/filter', [DigitalController::class, 'filter']);
+Route::get('/digital/top-events', [DigitalController::class, 'getTopEvents']);
+Route::post('/event-partners', [EventPartnerController::class, 'store']);
+Route::get('/events-digital', [EventController::class, 'eventsDigital']);
+Route::put('brands/{id}/increment-result', [BrandController::class, 'incrementResult']);
+
+Route::get('event',[EventController::class, 'event']);
+Route::get('/event/{id}', [EventController::class, 'getById']);
+Route::post('event', [EventController::class, 'create']);
+Route::put('/event/{id}', [EventController::class, 'update']);
+Route::delete('/event/{id}', [EventController::class, 'delete']);
+Route::get('/events/filter', [EventController::class, 'filter']);
+Route::post('/event-participants', [EventParticipantController::class, 'create']);

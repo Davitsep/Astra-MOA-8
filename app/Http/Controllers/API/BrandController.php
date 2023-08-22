@@ -65,6 +65,22 @@ class BrandController extends Controller
         ]);
     }
 
+    public function incrementResult($id)
+    {
+        $brand = Brand::find($id);
+
+        if (!$brand) {
+            return response()->json(['message' => 'Brand tidak ditemukan!'], 404);
+        }
+
+        // Menambahkan nilai 1 pada kolom "result"
+        $brand->increment('result', 1);
+
+        return response()->json([
+            'message' => 'Nilai kolom "result" berhasil ditambahkan'
+        ]);
+    }
+
      public function destroy($id)
     {
         $brand = Brand::find($id);
